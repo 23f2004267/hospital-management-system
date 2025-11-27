@@ -7,22 +7,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db =SQLAlchemy(app)
 
 
-### -----models----- ###
 from datetime import datetime
 
 class User(db.Model):
     __tablename__ = 'users' 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    user_name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    role = db.Column(db.String(50), nullable=False)  # e.g., 'admin', 'doctor', 'nurse', 'patient'
+    role = db.Column(db.String(50), nullable=False)  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    #connection established between department and user  many to one 
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
 
-    #reverse relationship 
     department = db.relationship("Department",back_populates="doctors")
 
 
@@ -42,7 +39,7 @@ class Appointment(db.Model):
     time = db.Column(db.Time, nullable=False)
     patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    status = db.Column(db.String(50), default='Booked', nullable=False)  # e.g., 'scheduled', 'completed', 'canceled'
+    status = db.Column(db.String(50), default='Booked', nullable=False) 
     treatment_id = db.Column(db.Integer, db.ForeignKey('treatments.id'), nullable=True, unique=True)
 
 class Treatment(db.Model):
@@ -55,11 +52,10 @@ class Treatment(db.Model):
 
 
 
-## run the app and create the database
 if __name__ == '__main__':
-    with app.app_context(): #needed for db operations
+    with app.app_context(): 
 
-        db.create_all() #create the database and tables
+        db.create_all() 
     app.run(debug=True)
 
 
