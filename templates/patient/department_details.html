@@ -33,12 +33,10 @@
 
     <hr>
 
-
     <h3>Overview</h3>
     <p style="line-height:1.5; font-size:14px;">
         {{ department.description }}
     </p>
-
 
     <h3 style="margin-top:20px;">Doctors' List</h3>
 
@@ -64,11 +62,9 @@
                     check availability
                 </a>
 
-                <a href="/doctor/{{ d.id }}/details"
-                   style="background:#76baf7; padding:6px 12px; border-radius:5px;
-                          text-decoration:none; color:white;">
-                    view details
-                </a>
+                <a href="{{ url_for('doctor_details', doctor_id=d.id) }}" 
+   class="btn btn-outline-primary">view details</a>
+
             </div>
         </div>
         {% endfor %}

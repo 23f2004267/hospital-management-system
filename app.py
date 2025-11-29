@@ -1,4 +1,5 @@
 from sqlalchemy.orm import aliased
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, request, redirect, url_for, session
 app = Flask(__name__)
@@ -37,8 +38,8 @@ class Department(db.Model):
 class Appointment(db.Model):
     __tablename__ = 'appointments'
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
-    time = db.Column(db.Time, nullable=False)
+    date = db.Column(db.String(20)) 
+    time = db.Column(db.String(50))
     patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     status = db.Column(db.String(50), default='Booked', nullable=False) 
@@ -52,6 +53,11 @@ class Treatment(db.Model):
     description = db.Column(db.String(255), nullable=False)
     prescribed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Medicine(db.Model):
+    __tablename__ = 'medicines'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    intake_time = db.Column(db.String(50), nullable=False)
 
 @app.route('/')
 def root():
@@ -101,6 +107,12 @@ def login():
             return redirect(url_for('admin_dash'))
         return render_template('login.html', error="you'ar new user go & signup first")
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 
 @app.route('/patient_dash')
 def patient_dash():
@@ -153,6 +165,60 @@ def patient_history():
         history=history
     )
 
+@app.route('/doctor/<int:doctor_id>/availability')
+def doctor_availability(doctor_id):
+    doctor = User.query.get_or_404(doctor_id)
+
+    from datetime import datetime, timedelta
+    days = []
+    for i in range(7):
+        d = datetime.now() + timedelta(days=i)
+        days.append(d.strftime("%d/%m/%Y"))
+
+    return render_template(
+        "patient/doctor_availability.html",
+        doctor=doctor,
+        days=days
+    )
+
+
+
+@app.route('/book_appointment', methods=['POST'])
+def book_appointment():
+    doctor_id = request.form.get("doctor_id")
+    date_str = request.form.get("date")   
+    time = request.form.get("time")
+    patient_id = session.get("id")
+
+    date_obj = datetime.strptime(date_str, "%d/%m/%Y").strftime("%d/%m/%Y")
+
+    new_appointment = Appointment(
+        date=date_obj,
+        time=time,
+        patient_id=patient_id,
+        doctor_id=doctor_id,
+        status="Booked"
+    )
+
+    db.session.add(new_appointment)
+    db.session.commit()
+
+    return redirect(url_for('patient_dash'))
+
+
+@app.route('/doctor/<int:doctor_id>/details')
+def doctor_details(doctor_id):
+    doctor = User.query.get_or_404(doctor_id)
+    department = Department.query.get(doctor.department_id)
+    
+    return render_template(
+        'patient/doctor_details.html',
+        doctor=doctor,
+        department=department
+    )
+
+
+
 @app.route('/department/<int:dept_id>')
 def department_details(dept_id):
     department = Department.query.get_or_404(dept_id)
@@ -195,6 +261,58 @@ def doctor_dash():
         appointments=appointments,
         patients=assigned_patients
     )
+
+
+@app.route('/doctor/update_history/<int:appointment_id>', methods=['GET', 'POST'])
+def update_history(appointment_id):
+
+    appointment = Appointment.query.get_or_404(appointment_id)
+    patient = User.query.get(appointment.patient_id)
+    doctor = User.query.get(appointment.doctor_id)
+    department = Department.query.get(doctor.department_id)
+
+    medicines = Medicine.query.all()
+
+    if request.method == 'POST':
+        visit_type = request.form.get("visit_type")
+        tests_done = request.form.get("tests_done")
+        diagnosis = request.form.get("diagnosis")
+        prescription = request.form.get("prescription")
+
+        selected_medicine_id = request.form.get("medicine_id")
+        selected_medicine = Medicine.query.get(selected_medicine_id)
+
+        description_text = f"""
+        Visit Type: {visit_type}
+        Tests Done: {tests_done}
+        Diagnosis: {diagnosis}
+        Prescription: {prescription}
+        Medicine: {selected_medicine.name} ({selected_medicine.intake_time})
+        """
+
+        new_record = Treatment(
+            treatment_name="Visit Record",
+            appointment_id=appointment.id,
+            description=description_text.strip()
+        )
+
+        db.session.add(new_record)
+
+        appointment.status = "Completed"
+        db.session.commit()
+
+        return redirect(url_for('doctor_dash'))
+
+    return render_template(
+        "doctor/update_history.html",
+        appointment=appointment,
+        patient=patient,
+        doctor=doctor,
+        department=department,
+        medicines=medicines
+    )
+
+
  
 
 @app.route('/admin_dash')
@@ -231,6 +349,42 @@ def admin_dash():
         patients=patients,
         appointments=appointments
     )
+
+@app.route('/patient_history/<int:patient_id>')
+def patient_history_admin(patient_id):
+
+    patient = User.query.get_or_404(patient_id)
+
+    latest_appt = (
+        Appointment.query
+        .filter_by(patient_id=patient_id)
+        .order_by(Appointment.id.desc())
+        .first()
+    )
+
+    doctor = None
+    department = None
+
+    if latest_appt:
+        doctor = User.query.get(latest_appt.doctor_id)
+        if doctor:
+            department = Department.query.get(doctor.department_id)
+
+    history = (
+        Treatment.query
+        .join(Appointment, Treatment.appointment_id == Appointment.id)
+        .filter(Appointment.patient_id == patient_id)
+        .all()
+    )
+
+    return render_template(
+        "patient/history.html",
+        patient=patient,
+        doctor=doctor,
+        department=department,
+        history=history
+    )
+
 
 
 @app.route('/contact')

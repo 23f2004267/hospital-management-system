@@ -15,7 +15,6 @@
     background:white;
 ">
 
-
     <div style="display:flex; justify-content:space-between; font-size:18px;">
         <b>Welcome Dr. {{ session['name'] }}</b>
         <a href="/logout" style="text-decoration:none; color:#000;">logout</a>
@@ -62,7 +61,6 @@
         {% endif %}
     </table>
 
-
     <h3 style="margin-top:30px;">Assigned Patients</h3>
 
     <div style="border:1px solid #aaa; padding:12px; border-radius:10px;">
@@ -71,11 +69,10 @@
                 <div style="padding:10px; border-bottom:1px solid #ddd;">
                     <b>{{ p.user_name }}</b>
 
-                    <a href="/doctor/patient_history/{{ p.id }}"
-                       style="float:right; background:#5dade2; color:white; padding:5px 12px; 
-                              border-radius:5px; text-decoration:none;">
-                        view
-                    </a>
+                    <a href="{{ url_for('patient_history_doctor', patient_id=p.id) }}"
+   style="background: lightblue; padding: 5px 10px; border-radius: 5px; text-decoration:none;">
+   View
+</a>
                 </div>
             {% endfor %}
         {% else %}

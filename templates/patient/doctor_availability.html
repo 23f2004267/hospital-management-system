@@ -1,0 +1,78 @@
+{% extends "root.html" %}
+
+{% block title %}Doctor Availability{% endblock %}
+
+{% block content %}
+
+<h2 style="text-align:center; margin-top:10px;">Doctor's Availability</h2>
+
+<div style="width:80%; margin:auto; margin-top:25px;">
+
+    <table border="1" width="100%" style="border-collapse:collapse; text-align:center;">
+        <tr style="background:#f2f2f2;">
+            <th style="padding:10px;">Date</th>
+            <th style="padding:10px;">08:00 - 12:00 am</th>
+            <th style="padding:10px;">04:00 - 09:00 pm</th>
+        </tr>
+
+        {% for date in days %}
+        <tr>
+
+            <td style="padding:12px;">
+                {{ date }}
+            </td>
+
+            <td style="padding:12px;">
+                <button class="slot-btn" data-time="morning" data-date="{{ date }}"
+                    style="padding:8px 20px; border:2px solid green; color:green; background:white; border-radius:5px; cursor:pointer;">
+                    available
+                </button>
+            </td>
+
+            <td style="padding:12px;">
+                <button class="slot-btn" data-time="evening" data-date="{{ date }}"
+                    style="padding:8px 20px; border:2px solid red; color:red; background:white; border-radius:5px; cursor:pointer;">
+                    available
+                </button>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div style="text-align:center; margin-top:20px;">
+        <form id="bookForm" method="POST" action="/book_appointment" style="display:none;">
+            <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+            <input type="hidden" name="date" id="selectedDate">
+            <input type="hidden" name="time" id="selectedTime">
+
+            <button type="submit"
+                style="padding:8px 25px; background:green; color:white; border:none; border-radius:7px; cursor:pointer;">
+                Book
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+let selected = null;
+
+document.querySelectorAll(".slot-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+
+        if (selected)
+            selected.style.background = "white";
+
+        selected = this;
+        selected.style.background = "#c5f7c4";
+
+        document.getElementById("selectedDate").value = this.dataset.date;
+        document.getElementById("selectedTime").value = this.dataset.time;
+
+        document.getElementById("bookForm").style.display = "block";
+    });
+});
+</script>
+
+{% endblock %}

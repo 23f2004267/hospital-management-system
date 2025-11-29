@@ -1,0 +1,82 @@
+{% extends "root.html" %}
+
+{% block title %}Doctor Details{% endblock %}
+
+{% block content %}
+
+<div style="
+    width: 70%;
+    margin: 30px auto;
+    padding: 20px;
+    border: 2px solid #444;
+    border-radius: 10px;
+    background: #fff;
+">
+
+    <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+        {{ department.name }} Department
+    </h2>
+
+    <div style="text-align: right; margin-top: -30px;">
+        <a href="{{ url_for('patient_history') }}" 
+           style="margin-right: 10px; text-decoration:none;">History</a>
+        <a href="{{ url_for('logout') }}" style="text-decoration:none;">logout</a>
+    </div>
+
+    <div style="display:flex; margin-top:20px;">
+
+
+        <div style="width: 30%; text-align:center;">
+            <div style="
+                width:120px; height:120px;
+                border-radius:50%;
+                background:#e0e0e0;
+                margin:auto;
+            "></div>
+        </div>
+
+        <div style="width: 70%; padding-left: 20px;">
+
+            <h3>Dr. {{ doctor.user_name }}</h3>
+
+            <p><b>Experience:</b> {{ doctor.experience }} Years</p>
+
+            <p style="margin-top:10px; line-height:1.5;">
+                Dr. {{ doctor.user_name }} is a specialist in the 
+                {{ department.name }} department with over 
+                {{ doctor.experience }} years of experience.
+            </p>
+
+        </div>
+    </div>
+
+    <div style="margin-top: 25px; text-align:center;">
+
+        <a href="{{ url_for('doctor_availability', doctor_id=doctor.id) }}"
+           style="
+                padding:8px 15px;
+                border:1px solid #0a74ff;
+                color:#0a74ff;
+                border-radius:8px;
+                margin-right:10px;
+                text-decoration:none;
+           ">
+            check availability
+        </a>
+
+        <a href="{{ url_for('department_details', dept_id=department.id) }}"
+           style="
+                padding:8px 15px;
+                border:1px solid #777;
+                color:#444;
+                border-radius:8px;
+                text-decoration:none;
+           ">
+            Go Back
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
