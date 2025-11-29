@@ -14,15 +14,13 @@
             background-attachment: fixed;
         }
 
-        /* Header Title */
         h1 {
             text-align: center;
             margin-top: 20px;
         }
 
-        /* Navigation Bar */
         nav {
-            background-color: rgb(181, 77, 7);      /* black bar */
+            background-color: rgb(181, 77, 7); 
             padding: 10px 0;
         }
 
@@ -34,7 +32,7 @@
         }
 
         nav ul li {
-            display: inline;             /* makes links come side-by-side */
+            display: inline;        
             margin: 0 20px;
         }
 
@@ -48,14 +46,12 @@
             text-decoration: underline;
         }
 
-        /* Main page container */
         .container {
             width: 80%;
             margin: auto;
             margin-top: 20px;
         }
 
-        /* Simple footer */
         footer {
             margin-top: 40px;
             padding: 15px;
@@ -69,10 +65,8 @@
 
 <body>
 
-    <!-- Main Heading -->
     <h1>Hospital Management System</h1>
 
-    <!-- Navigation Bar -->
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
@@ -92,7 +86,6 @@
         </ul>
     </nav>
 
-    <!-- Page Content (Each page will fill this area) -->
     <div class="container">
         {% block content %}
         <div style="
@@ -117,7 +110,6 @@
         {% endblock %}
     </div>
 
-    <!-- Footer -->
     <footer>
         © 2025 Hospital System | All Rights Reserved
     </footer>

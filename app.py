@@ -104,13 +104,10 @@ def login():
 
 @app.route('/patient_dash')
 def patient_dash():
-    # Get all departments
     departments = Department.query.all()
 
-    # Get logged-in user's appointments
     appointments = Appointment.query.filter_by(patient_id=session.get("id")).all()
 
-    # Convert appointment data (so HTML can show it easily)
     formatted = []
     for appt in appointments:
         doctor = User.query.get(appt.doctor_id)
@@ -135,14 +132,11 @@ def patient_history():
 
     patient_id = session.get('id')
 
-    # Patient object
     patient = User.query.get(patient_id)
 
-    # Appointment history
     history = Treatment.query.join(Appointment, Treatment.appointment_id == Appointment.id)\
         .filter(Appointment.patient_id == patient_id).all()
 
-    # If history exists, pull doctor and department from first record
     if history:
         appt = Appointment.query.get(history[0].appointment_id)
         doctor = User.query.get(appt.doctor_id)
@@ -178,7 +172,6 @@ def department_details(dept_id):
 def doctor_dash():
     doctor_id = session.get("id")
 
-    # doctor’s upcoming appointments
     appointments = (
         db.session.query(Appointment, User)
         .join(User, Appointment.patient_id == User.id)
@@ -190,7 +183,6 @@ def doctor_dash():
         .all()
     )
 
-    # assigned patients list
     assigned_patients = (
         User.query.join(Appointment, Appointment.patient_id == User.id)
         .filter(Appointment.doctor_id == doctor_id)
@@ -214,7 +206,6 @@ def admin_dash():
     doctors = User.query.filter_by(role="doctor").all()
     patients = User.query.filter_by(role="patient").all()
 
-    # Aliases to avoid ambiguous column names
     patient = aliased(User)
     doctor = aliased(User)
 
