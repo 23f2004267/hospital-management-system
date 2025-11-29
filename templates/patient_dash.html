@@ -1,0 +1,45 @@
+{% extends "root.html" %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+
+<h2>Patient Dashboard</h2>
+
+<h3>Available Departments</h3>
+<ul>
+    {% for dept in departments %}
+        <li>{{ dept.name }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Doctors</h3>
+<ul>
+    {% for doc in doctors %}
+        <li>
+            {{ doc.user_name }} ({{ doc.department.name }})
+            <a href="/book/{{ doc.id }}">Book Appointment</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<h3>Your Upcoming Appointments</h3>
+<ul>
+    {% for appt in upcoming %}
+        <li>
+            {{ appt.date }} at {{ appt.time }} with Dr. {{ appt.doctor_name }}
+            ({{ appt.status }})
+        </li>
+    {% endfor %}
+</ul>
+
+<h3>Your Past Appointments</h3>
+<ul>
+    {% for appt in past %}
+        <li>
+            {{ appt.date }} — {{ appt.treatment }}
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

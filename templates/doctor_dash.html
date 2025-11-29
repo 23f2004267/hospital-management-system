@@ -1,0 +1,30 @@
+{% extends "root.html" %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+
+<h2>Doctor Dashboard</h2>
+
+<h3>Your Appointments</h3>
+
+{% if appointments %}
+    <ul>
+    {% for appt in appointments %}
+        <li>
+            <strong>Patient:</strong> {{ appt.patient_name }} <br>
+            <strong>Date:</strong> {{ appt.date }} <br>
+            <strong>Time:</strong> {{ appt.time }} <br>
+
+            <a href="/doctor/complete/{{ appt.id }}">Mark Completed</a> |
+            <a href="/doctor/cancel/{{ appt.id }}">Cancel</a>
+            <br><br>
+        </li>
+    {% endfor %}
+    </ul>
+
+{% else %}
+    <p>No appointments today.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "root.html" %}
+
+{% block title %}Signup{% endblock %}
+
+{% block content %}
+
+<h2 style="text-align:center;">Register Form</h2>
+
+<!-- Registration Box -->
+<div style="
+    width: 350px;
+    margin: auto;
+    padding: 25px;
+    border: 2px solid black;
+    border-radius: 20px;
+    background: white;
+">
+
+    <form method="POST">
+
+        <!-- Username -->
+        <label style="font-size:15px;">Username</label><br>
+        <input 
+            type="text" 
+            name="user_name"
+            required
+            style="
+                width:100%; 
+                padding:10px; 
+                margin-top:5px; 
+                margin-bottom:15px;
+                border:2px solid black;
+                border-radius:10px;
+            "
+        >
+
+        <!-- Email -->
+        <label style="font-size:15px;">Email</label><br>
+        <input 
+            type="email" 
+            name="email"
+            required
+            style="
+                width:100%; 
+                padding:10px; 
+                margin-top:5px; 
+                margin-bottom:15px;
+                border:2px solid black;
+                border-radius:10px;
+            "
+        >
+
+        <!-- Password -->
+        <label style="font-size:15px;">Password</label><br>
+        <input 
+            type="password" 
+            name="password"
+            required
+            style="
+                width:100%; 
+                padding:10px; 
+                margin-top:5px; 
+                margin-bottom:20px;
+                border:2px solid black;
+                border-radius:10px;
+            "
+        >
+
+        <!-- Register Button -->
+        <button 
+            type="submit"
+            style="
+                width:100%;
+                padding:10px;
+                font-size:16px;
+                border:2px solid black;
+                background:white;
+                border-radius:10px;
+                cursor:pointer;
+            "
+        >
+            Register
+        </button>
+
+    </form>
+
+    <p style="text-align:center; margin-top:15px;">
+        Already have an account? 
+        <a href="{{ url_for('login') }}">Login</a>
+    </p>
+
+</div>
+
+{% endblock %}

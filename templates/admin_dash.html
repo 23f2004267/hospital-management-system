@@ -1,0 +1,24 @@
+{% extends "root.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<h2>Admin Dashboard</h2>
+
+<div style="padding: 10px; border:1px solid gray; width:300px; border-radius:10px;">
+    <p><strong>Total Doctors:</strong> {{ total_doctors }}</p>
+    <p><strong>Total Patients:</strong> {{ total_patients }}</p>
+    <p><strong>Total Appointments:</strong> {{ total_appointments }}</p>
+</div>
+
+<br>
+
+<!-- Buttons for admin actions -->
+<div>
+    <a href="/admin/doctors" style="margin-right:20px;">Manage Doctors</a>
+    <a href="/admin/patients" style="margin-right:20px;">View Patients</a>
+    <a href="/admin/appointments">View Appointments</a>
+</div>
+
+{% endblock %}

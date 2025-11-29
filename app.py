@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
-
+from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -51,11 +50,65 @@ class Treatment(db.Model):
     prescribed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+@app.route('/')
+def root():
+    return render_template('root.html')
+
+@app.route('/signup', methods=["POST", "GET"])
+def signup():
+    if request.method == "POST":
+        user_name = request.form.get("user_name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        role = "patient"
+
+        user = User.query.filter(User.user_name == user_name, User.email == email).first()
+        if user:
+            return redirect(url_for('login'))
+
+        new_user = User(user_name=user_name, email=email, password=password, role="patient")
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect(url_for('login'))
+    return render_template('signup.html')
+
+@app.route('/login',methods=["POST","GET"])
+def login():
+    if request.method == "POST":
+        user_name = request.form.get("user_name")
+        password = request.form.get("password")
+
+        user = User.query.filter_by(user_name=user_name, password=password).first()
+        if user and user.role == "patient":
+            return redirect(url_for('patient_dashboard'))
+        elif user and user.role == "doctor":
+            return redirect(url_for('doctor_dashboard'))
+        elif user and user.role == "admin":
+            return redirect(url_for('admin_dashboard'))
+        return render_template('login.html', error="you'ar new user go & signup first")
+    return render_template('login.html')
+
+@app.route('/patient_dash')
+def patient_dash():
+    return render_template('patient_dash.html')
+
+@app.route('/doctor_dash')
+def doctor_dash():
+    return render_template('doctor_dash.html')  
+
+@app.route('/admin_dash')
+def admin_dash():
+    return render_template('admin_dash.html')
+
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
 
 if __name__ == '__main__':
     with app.app_context(): 
 
         db.create_all() 
     app.run(debug=True)
-
-
+ 
