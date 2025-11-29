@@ -4,21 +4,114 @@
 
 {% block content %}
 
-<h2>Admin Dashboard</h2>
+<h2 style="text-align:center; margin-top:20px;">Admin Dashboard</h2>
 
-<div style="padding: 10px; border:1px solid gray; width:300px; border-radius:10px;">
-    <p><strong>Total Doctors:</strong> {{ total_doctors }}</p>
-    <p><strong>Total Patients:</strong> {{ total_patients }}</p>
-    <p><strong>Total Appointments:</strong> {{ total_appointments }}</p>
-</div>
+<!-- Search & Welcome Section -->
+<div style="
+    width:90%; 
+    margin:auto; 
+    padding:20px;
+    border:2px solid #555;
+    border-radius:10px;
+    background:white;
+">
 
-<br>
+    <p style="font-size:18px;"><b>Hello Admin</b></p>
 
-<!-- Buttons for admin actions -->
-<div>
-    <a href="/admin/doctors" style="margin-right:20px;">Manage Doctors</a>
-    <a href="/admin/patients" style="margin-right:20px;">View Patients</a>
-    <a href="/admin/appointments">View Appointments</a>
+    <form method="GET" action="/admin_search" style="text-align:right;">
+        <input type="text" name="query" placeholder="doctor, patient, department..." 
+               style="padding:7px; width:250px; border:1px solid #333;">
+        <button type="submit" style="
+            padding:7px 15px; 
+            background:#0088ff; 
+            color:white; 
+            border:none; 
+            border-radius:5px;
+            cursor:pointer;">
+            Search
+        </button>
+    </form>
+
+    <!-- CREATE BUTTON -->
+    <div style="text-align:right; margin-top:10px;">
+        <a href="/add_doctor" 
+           style="padding:7px 12px; background: #af6e4c; color:white; 
+                  border-radius:5px; text-decoration:none;">
+            + Create
+        </a>
+    </div>
+
+    <!-- REGISTERED DOCTORS -->
+    <h3>Registered Doctors</h3>
+    <div style="border:1px solid #999; padding:10px; border-radius:8px;">
+        {% for d in doctors %}
+            <div style="padding:8px; border-bottom:1px solid #ddd;">
+                <b>{{ d.user_name }}</b>
+
+                <a href="/edit_doctor/{{ d.id }}" 
+                   style="background:green; padding:3px 8px; margin-left:10px;
+                          border-radius:5px; text-decoration:none;">edit</a>
+
+                <a href="/delete_doctor/{{ d.id }}" 
+                   style="background:red; color:white; padding:3px 8px; 
+                          border-radius:5px; text-decoration:none;">delete</a>
+
+                <a href="/blacklist_doctor/{{ d.id }}" 
+                   style="background:lightgray; color:white; padding:3px 8px; 
+                          border-radius:5px; text-decoration:none;">blacklist</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- REGISTERED PATIENTS -->
+    <h3 style="margin-top:20px;">Registered Patients</h3>
+    <div style="border:1px solid #999; padding:10px; border-radius:8px;">
+        {% for p in patients %}
+            <div style="padding:8px; border-bottom:1px solid #ddd;">
+                <b>{{ p.user_name }}</b>
+
+                <a href="/edit_patient/{{ p.id }}" 
+                   style="background:green; padding:3px 8px; margin-left:10px;
+                          border-radius:5px; text-decoration:none;">edit</a>
+
+                <a href="/delete_patient/{{ p.id }}" 
+                   style="background:red; color:white; padding:3px 8px; 
+                          border-radius:5px; text-decoration:none;">delete</a>
+
+                <a href="/blacklist_patient/{{ p.id }}" 
+                   style="background:lightgray; color:white; padding:3px 8px; 
+                          border-radius:5px; text-decoration:none;">blacklist</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- UPCOMING APPOINTMENTS -->
+    <h3 style="margin-top:20px;">Upcoming Appointments</h3>
+    <table border="1" width="100%" style="border-collapse:collapse; text-align:center;">
+        <tr style="background:#eee;">
+            <th>Sr No.</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Department</th>
+            <th>History</th>
+        </tr>
+
+        {% for a in appointments %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ a.patient_name }}</td>
+            <td>{{ a.doctor_name }}</td>
+            <td>{{ a.department }}</td>
+
+            <td>
+                <a href="/patient_history/{{ a.patient_id }}" 
+                   style="background:lightblue; color:white; padding:5px 10px;
+                          border-radius:5px;">view</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
 </div>
 
 {% endblock %}

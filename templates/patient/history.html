@@ -1,0 +1,61 @@
+{% extends "root.html" %}
+
+{% block title %}Patient History{% endblock %}
+
+{% block content %}
+
+<h2 style="margin-top:20px;">Patient History</h2>
+
+
+<div style="
+    padding:20px;
+    background:white;
+    border-radius:10px;
+    border:2px solid #444;
+    width:85%;
+    margin:auto;
+">
+
+    <!-- Patient Details -->
+    <p><b>Patient Name:</b> {{ patient.user_name }}</p>
+    <p><b>Doctor's Name:</b> {{ doctor.user_name }}</p>
+    <p><b>Department:</b> {{ department.name }}</p>
+
+    <!-- History Table -->
+    <table border="1" width="100%" 
+           style="border-collapse:collapse; margin-top:20px; text-align:center;">
+
+        <tr style="background:#eee; font-weight:bold;">
+            <th>Visit No.</th>
+            <th>Visit Type</th>
+            <th>Tests Done</th>
+            <th>Diagnosis</th>
+            <th>Prescription</th>
+            <th>Medicines</th>
+        </tr>
+
+        {% for h in history %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ h.visit_type }}</td>
+            <td>{{ h.tests_done }}</td>
+            <td>{{ h.diagnosis }}</td>
+            <td>{{ h.prescription }}</td>
+            <td>{{ h.medicines }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Back Button -->
+    <div style="text-align:right; margin-top:20px;">
+        <a href="{{ url_for('patient_dash') }}"
+           style="padding:7px 20px; background:#007bff;
+                  color:white; text-decoration:none;
+                  border-radius:5px;">
+            back
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

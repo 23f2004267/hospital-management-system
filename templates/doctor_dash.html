@@ -4,27 +4,95 @@
 
 {% block content %}
 
-<h2>Doctor Dashboard</h2>
+<h2 style="text-align:center; margin-top:20px;">Doctors' Dashboard</h2>
 
-<h3>Your Appointments</h3>
+<div style="
+    width:90%; 
+    margin:auto; 
+    padding:20px;
+    border:2px solid #666;
+    border-radius:10px;
+    background:white;
+">
 
-{% if appointments %}
-    <ul>
-    {% for appt in appointments %}
-        <li>
-            <strong>Patient:</strong> {{ appt.patient_name }} <br>
-            <strong>Date:</strong> {{ appt.date }} <br>
-            <strong>Time:</strong> {{ appt.time }} <br>
+    <!-- Welcome Header -->
+    <div style="display:flex; justify-content:space-between; font-size:18px;">
+        <b>Welcome Dr. {{ session['name'] }}</b>
+        <a href="/logout" style="text-decoration:none; color:#000;">logout</a>
+    </div>
 
-            <a href="/doctor/complete/{{ appt.id }}">Mark Completed</a> |
-            <a href="/doctor/cancel/{{ appt.id }}">Cancel</a>
-            <br><br>
-        </li>
-    {% endfor %}
-    </ul>
+    <!-- Upcoming Appointments -->
+    <h3 style="margin-top:25px;">Upcoming Appointments</h3>
 
-{% else %}
-    <p>No appointments today.</p>
-{% endif %}
+    <table border="1" width="100%" style="border-collapse:collapse; text-align:center;">
+        <tr style="background:#eee;">
+            <th>Sr No.</th>
+            <th>Patient Name</th>
+            <th>Patient History</th>
+            <th>Actions</th>
+        </tr>
+
+        {% if appointments %}
+            {% for appt in appointments %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ appt.patient_name }}</td>
+
+                <td>
+                    <a href="/doctor/update_history/{{ appt.id }}" 
+                       style="background:#5dade2; padding:5px 10px; border-radius:5px; color:white;">
+                        update
+                    </a>
+                </td>
+
+                <td>
+                    <a href="/doctor/complete/{{ appt.id }}"
+                       style="background:#58d68d; padding:5px 10px; border-radius:5px; color:white;">
+                        mark as complete
+                    </a>
+
+                    <a href="/doctor/cancel/{{ appt.id }}"
+                       style="background:#e74c3c; padding:5px 10px; border-radius:5px; color:white;">
+                        cancel
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr><td colspan="4">No appointments</td></tr>
+        {% endif %}
+    </table>
+
+
+    <!-- Assigned Patients -->
+    <h3 style="margin-top:30px;">Assigned Patients</h3>
+
+    <div style="border:1px solid #aaa; padding:12px; border-radius:10px;">
+        {% if patients %}
+            {% for p in patients %}
+                <div style="padding:10px; border-bottom:1px solid #ddd;">
+                    <b>{{ p.user_name }}</b>
+
+                    <a href="/doctor/patient_history/{{ p.id }}"
+                       style="float:right; background:#5dade2; color:white; padding:5px 12px; 
+                              border-radius:5px; text-decoration:none;">
+                        view
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No patients assigned.</p>
+        {% endif %}
+    </div>
+
+    <!-- Provide Availability Button -->
+    <div style="text-align:center; margin-top:25px;">
+        <a href="/doctor/availability"
+           style="padding:8px 20px; background:#82e0aa; border-radius:6px; text-decoration:none;">
+            Provide Availability
+        </a>
+    </div>
+
+</div>
 
 {% endblock %}

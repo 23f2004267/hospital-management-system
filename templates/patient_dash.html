@@ -4,42 +4,59 @@
 
 {% block content %}
 
-<h2>Patient Dashboard</h2>
+<h2>Welcome {{ session.name }}</h2>
 
-<h3>Available Departments</h3>
-<ul>
+
+<!-- ------------ Departments Section ---------------- -->
+<div style="border: 2px solid black; padding: 15px; border-radius: 10px; margin-bottom: 25px;">
+    <h3>Departments</h3>
+
     {% for dept in departments %}
-        <li>{{ dept.name }}</li>
+        <div style="margin-bottom:10px; padding: 8px; border:1px solid gray; border-radius:8px;">
+            <strong>{{ dept.name }}</strong>
+            <a href="/department/{{ dept.id }}" 
+               style="float:right; border:1px solid blue; padding:4px 10px; border-radius:5px;">
+               view details
+            </a>
+        </div>
     {% endfor %}
-</ul>
+</div>
 
-<h3>Doctors</h3>
-<ul>
-    {% for doc in doctors %}
-        <li>
-            {{ doc.user_name }} ({{ doc.department.name }})
-            <a href="/book/{{ doc.id }}">Book Appointment</a>
-        </li>
-    {% endfor %}
-</ul>
+<!-- ------------ Appointments Section ---------------- -->
+<div style="border: 2px solid black; padding: 15px; border-radius: 10px;">
+    <h3>Upcoming Appointments</h3>
 
-<h3>Your Upcoming Appointments</h3>
-<ul>
-    {% for appt in upcoming %}
-        <li>
-            {{ appt.date }} at {{ appt.time }} with Dr. {{ appt.doctor_name }}
-            ({{ appt.status }})
-        </li>
-    {% endfor %}
-</ul>
+    {% if appointments %}
+        <table border="1" width="100%" cellpadding="8">
+            <tr>
+                <th>Sr No.</th>
+                <th>Doctor Name</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Action</th>
+            </tr>
 
-<h3>Your Past Appointments</h3>
-<ul>
-    {% for appt in past %}
-        <li>
-            {{ appt.date }} — {{ appt.treatment }}
-        </li>
-    {% endfor %}
-</ul>
+            {% for appt in appointments %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ appt.doctor_name }}</td>
+                <td>{{ appt.department }}</td>
+                <td>{{ appt.date }}</td>
+                <td>{{ appt.time }}</td>
+                <td>
+                    <a href="/cancel/{{ appt.id }}" 
+                       style="color:red; border:1px solid red; padding:3px 8px; border-radius:5px;">
+                        cancel
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% else %}
+        <p>No upcoming appointments.</p>
+    {% endif %}
+</div>
 
 {% endblock %}

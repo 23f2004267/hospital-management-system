@@ -1,0 +1,80 @@
+{% extends "root.html" %}
+
+{% block title %}Department Details{% endblock %}
+
+{% block content %}
+
+<h2 style="text-align:center; margin-top:20px;">Department of {{ department.name }}</h2>
+
+<div style="
+    width:90%;
+    margin:auto;
+    padding:20px;
+    background:white;
+    border:2px solid #777;
+    border-radius:10px;
+">
+
+    <!-- HEADER: Department name + History + Logout -->
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>Department of {{ department.name }}</h3>
+
+        <div>
+            <a href="{{ url_for('patient_history', patient_id=session['id']) }}"
+               style="margin-right:10px; text-decoration:none; color:black;">
+                History
+            </a>
+
+            <a href="/logout"
+               style="text-decoration:none; color:black;">
+                logout
+            </a>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- OVERVIEW SECTION -->
+    <h3>Overview</h3>
+    <p style="line-height:1.5; font-size:14px;">
+        {{ department.description }}
+    </p>
+
+    <!-- DOCTORS LIST -->
+    <h3 style="margin-top:20px;">Doctors' List</h3>
+
+    <div style="
+        border:1px solid #aaa;
+        padding:15px;
+        border-radius:10px;
+    ">
+        {% for d in doctors %}
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            border-bottom:1px solid #ddd;
+            padding:10px 0;
+        ">
+            <span><b>Dr. {{ d.user_name }}</b></span>
+
+            <div>
+                <a href="/doctor/{{ d.id }}/availability"
+                   style="background:#76baf7; padding:6px 12px; border-radius:5px;
+                          text-decoration:none; color:white; margin-right:10px;">
+                    check availability
+                </a>
+
+                <a href="/doctor/{{ d.id }}/details"
+                   style="background:#76baf7; padding:6px 12px; border-radius:5px;
+                          text-decoration:none; color:white;">
+                    view details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

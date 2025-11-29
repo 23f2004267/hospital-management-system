@@ -76,9 +76,19 @@
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="{{ url_for('login') }}">Login</a></li>
-            <li><a href="{{ url_for('signup') }}">Signup </a></li>
-            <li><a href="/contact">Contact Us</a></li>
+            {% if not session %}
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('signup') }}">Signup </a></li>
+                <li><a href="/contact">Contact Us</a></li>
+            {% elif session and session.role == 'patient' %}
+                <a href="{{ url_for('signup') }}">LogOut</a> 
+                <a href="{{ url_for('patient_history') }}">History</a>
+            {% elif session and session.role == 'admin' %}
+                <a href="{{ url_for('signup') }}">LogOut</a>
+                
+
+            {% endif %}  
+
         </ul>
     </nav>
 
