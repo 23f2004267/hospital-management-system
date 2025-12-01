@@ -180,7 +180,6 @@ def patient_history():
 
 @app.route('/doctor/availability', methods=['GET'])
 def doctor_availability():
-    # Only logged-in doctor can access
     if session.get("role") != "doctor":
         return redirect(url_for('login'))
 
@@ -245,7 +244,6 @@ def book_appointment():
     time = request.form.get("time")
     patient_id = session.get("id")
 
-    # Check slot availability
     av = DoctorAvailability.query.filter_by(doctor_id=doctor_id, date=date).first()
 
     if not av:
@@ -257,7 +255,6 @@ def book_appointment():
     if time == "evening" and av.evening != "available":
         return "This evening slot is not available!", 400
 
-    # Check if already booked
     exists = Appointment.query.filter_by(
         doctor_id=doctor_id, date=date, time=time
     ).first()
@@ -296,8 +293,7 @@ def doctor_details(doctor_id):
 def toggle_slot():
     doctor_id = session["id"]
     date = request.form.get("date")
-    time = request.form.get("time")  # morning / evening
-
+    time = request.form.get("time") 
     record = DoctorAvailability.query.filter_by(doctor_id=doctor_id, date=date).first()
 
     if not record:
@@ -318,7 +314,6 @@ def doctor_cancel(appointment_id):
 
     appt = Appointment.query.get_or_404(appointment_id)
 
-    # only the doctor assigned to this appointment can cancel
     if appt.doctor_id != session.get("id"):
         return redirect(url_for('doctor_dash'))
 
@@ -336,7 +331,6 @@ def toggle_complete(appointment_id):
     if appt.doctor_id != session.get("id"):
         return redirect(url_for('doctor_dash'))
 
-    # Toggle logic
     if appt.status == "Booked":
         appt.status = "Completed"
     else:
