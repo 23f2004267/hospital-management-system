@@ -44,13 +44,26 @@
     </table>
 
     <div style="text-align:right; margin-top:20px;">
-        <a href="{{ url_for('patient_dash') }}"
-           style="padding:7px 20px; background:#007bff;
-                  color:white; text-decoration:none;
-                  border-radius:5px;">
+    {% if session.role == 'doctor' %}
+        <a href="{{ url_for('doctor_dash') }}"
+           style="padding:7px 20px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">
             back
         </a>
-    </div>
+
+    {% elif session.role == 'admin' %}
+        <a href="{{ url_for('admin_dash') }}"
+           style="padding:7px 20px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">
+            back
+        </a>
+
+    {% else %}
+        <a href="{{ url_for('patient_dash') }}"
+           style="padding:7px 20px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">
+            back
+        </a>
+    {% endif %}
+</div>
+
 
 </div>
 

@@ -35,17 +35,17 @@
             </tr>
 
             {% for appt in appointments %}
-            <tr>
+            <tr id="appt-row-{{ appt.id }}">
                 <td>{{ loop.index }}</td>
                 <td>{{ appt.doctor_name }}</td>
                 <td>{{ appt.department }}</td>
                 <td>{{ appt.date }}</td>
                 <td>{{ appt.time }}</td>
                 <td>
-                    <a href="/cancel/{{ appt.id }}" 
-                       style="color:red; border:1px solid red; padding:3px 8px; border-radius:5px;">
+                    <button onclick="cancelAppointment({{ appt.id }})"
+                        style="background:white; border:1px solid red; padding:4px 10px; border-radius:6px; color:red;">
                         cancel
-                    </a>
+                    </button>
                 </td>
             </tr>
             {% endfor %}
@@ -55,5 +55,24 @@
         <p>No upcoming appointments.</p>
     {% endif %}
 </div>
+
+<script>
+function cancelAppointment(id) {
+    fetch('/cancel', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ appointment_id: id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const row = document.getElementById("appt-row-" + id);
+            if (row) row.remove();
+        } else {
+            alert("Unable to cancel appointment.");
+        }
+    });
+}
+</script>
 
 {% endblock %}

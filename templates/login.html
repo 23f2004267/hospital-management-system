@@ -3,15 +3,72 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
 
-<form method="POST">
-    <label>Email</label><br>
-    <input type="email" name="email" required><br><br>
+<h2 style="text-align:center;">Login</h2>
 
-    <label>Password</label><br>
-    <input type="password" name="password" required><br><br>
+<div style="
+    width: 350px;
+    margin: auto;
+    padding: 25px;
+    border: 2px solid black;
+    border-radius: 20px;
+    background: white;
+">
 
-    <button type="submit">Login</button>
-</form>
+    <form method="POST">
+
+        <label style="font-size:15px;">Email</label><br>
+        <input 
+            type="email" 
+            name="email"
+            required
+            style="
+                width:100%; 
+                padding:10px; 
+                margin-top:5px; 
+                margin-bottom:15px;
+                border:2px solid black;
+                border-radius:10px;
+            "
+        >
+
+        <label style="font-size:15px;">Password</label><br>
+        <input 
+            type="password" 
+            name="password"
+            required
+            style="
+                width:100%; 
+                padding:10px; 
+                margin-top:5px; 
+                margin-bottom:20px;
+                border:2px solid black;
+                border-radius:10px;
+            "
+        >
+
+        <button 
+            type="submit"
+            style="
+                width:100%;
+                padding:10px;
+                font-size:16px;
+                border:2px solid black;
+                background:white;
+                border-radius:10px;
+                cursor:pointer;
+            "
+        >
+            Login
+        </button>
+
+    </form>
+
+    <p style="text-align:center; margin-top:15px;">
+        New user? 
+        <a href="{{ url_for('signup') }}">Signup</a>
+    </p>
+
+</div>
+
 {% endblock %}

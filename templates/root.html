@@ -68,23 +68,29 @@
     <h1>Hospital Management System</h1>
 
     <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            {% if not session %}
-                <li><a href="{{ url_for('login') }}">Login</a></li>
-                <li><a href="{{ url_for('signup') }}">Signup </a></li>
-                <li><a href="/contact">Contact Us</a></li>
-            {% elif session and session.role == 'patient' %}
-                <a href="{{ url_for('signup') }}">LogOut</a> 
-                <a href="{{ url_for('patient_history') }}">History</a>
-            {% elif session and session.role == 'admin' %}
-                <a href="{{ url_for('signup') }}">LogOut</a>
-                
+    <ul>
+        <li><a href="/">Home</a></li>
 
-            {% endif %}  
+        {% if not session %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('signup') }}">Signup</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
 
-        </ul>
-    </nav>
+        {% elif session.role == 'patient' %}
+            <li><a href="{{ url_for('patient_history') }}">History</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+
+        {% elif session.role == 'doctor' %}
+            <li><a href="{{ url_for('doctor_dash') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+
+        {% elif session.role == 'admin' %}
+            <li><a href="{{ url_for('admin_dash') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
 
     <div class="container">
         {% block content %}

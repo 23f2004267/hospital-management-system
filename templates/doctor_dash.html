@@ -1,29 +1,30 @@
 {% extends "root.html" %}
-
 {% block title %}Doctor Dashboard{% endblock %}
 
 {% block content %}
 
-<h2 style="text-align:center; margin-top:20px;">Doctors' Dashboard</h2>
+<h2 style="text-align:center; margin-top:20px; font-weight:600;">
+    Doctors' Dashboard
+</h2>
 
 <div style="
-    width:90%; 
-    margin:auto; 
-    padding:20px;
-    border:2px solid #666;
-    border-radius:10px;
+    width:85%;
+    margin:auto;
+    padding:25px;
     background:white;
+    border:1px solid #ccc;
+    border-radius:8px;
 ">
 
-    <div style="display:flex; justify-content:space-between; font-size:18px;">
+    <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:15px;">
         <b>Welcome Dr. {{ session['name'] }}</b>
-        <a href="/logout" style="text-decoration:none; color:#000;">logout</a>
+        <a href="/logout" style="text-decoration:none; color:black;">logout</a>
     </div>
 
-    <h3 style="margin-top:25px;">Upcoming Appointments</h3>
+    <h3 style="margin-bottom:10px; font-weight:600;">Upcoming Appointments</h3>
 
-    <table border="1" width="100%" style="border-collapse:collapse; text-align:center;">
-        <tr style="background:#eee;">
+    <table width="100%" style="border-collapse:collapse; text-align:center; font-size:15px;">
+        <tr style="background:#f5f5f5; height:40px;">
             <th>Sr No.</th>
             <th>Patient Name</th>
             <th>Patient History</th>
@@ -32,59 +33,69 @@
 
         {% if appointments %}
             {% for appt in appointments %}
-            <tr>
+            <tr style="border-bottom:1px solid #ddd; height:38px;">
                 <td>{{ loop.index }}</td>
                 <td>{{ appt.patient_name }}</td>
 
                 <td>
                     <a href="/doctor/update_history/{{ appt.id }}" 
-                       style="background:#5dade2; padding:5px 10px; border-radius:5px; color:white;">
+                       style="padding:5px 12px; border:1px solid #999; border-radius:4px; text-decoration:none;">
                         update
                     </a>
                 </td>
 
                 <td>
-                    <a href="/doctor/complete/{{ appt.id }}"
-                       style="background:#58d68d; padding:5px 10px; border-radius:5px; color:white;">
-                        mark as complete
-                    </a>
+                    <a href="{{ url_for('toggle_complete', appointment_id=appt.id) }}"
+   style="background:#58d68d; padding:5px 12px; border-radius:6px; color:white;">
+   {% if appt.status == 'Completed' %}
+       completed
+   {% else %}
+       complete
+   {% endif %}
+</a>
 
-                    <a href="/doctor/cancel/{{ appt.id }}"
-                       style="background:#e74c3c; padding:5px 10px; border-radius:5px; color:white;">
+
+
+                    <a href="{{ url_for('doctor_cancel', appointment_id=appt.id) }}"
+                       style="padding:5px 12px; border:1px solid #999; border-radius:4px; text-decoration:none;">
                         cancel
                     </a>
                 </td>
             </tr>
             {% endfor %}
         {% else %}
-            <tr><td colspan="4">No appointments</td></tr>
+        <tr>
+            <td colspan="4" style="padding:10px; color:#666;">No appointments</td>
+        </tr>
         {% endif %}
     </table>
 
-    <h3 style="margin-top:30px;">Assigned Patients</h3>
+    <h3 style="margin-top:25px; margin-bottom:10px; font-weight:600;">Assigned Patients</h3>
 
-    <div style="border:1px solid #aaa; padding:12px; border-radius:10px;">
+    <div style="border:1px solid #ccc; border-radius:6px; padding:12px; background:#fafafa;">
         {% if patients %}
             {% for p in patients %}
-                <div style="padding:10px; border-bottom:1px solid #ddd;">
-                    <b>{{ p.user_name }}</b>
+                <div style="padding:10px 0; border-bottom:1px solid #ddd; display:flex; justify-content:space-between;">
+                    <span>{{ p.user_name }}</span>
 
-                    <a href="{{ url_for('patient_history_doctor', patient_id=p.id) }}"
-   style="background: lightblue; padding: 5px 10px; border-radius: 5px; text-decoration:none;">
-   View
-</a>
+                    <a href="{{ url_for('patient_history_admin', patient_id=p.id) }}"
+                       style="padding:5px 12px; border:1px solid #999; border-radius:4px; text-decoration:none;">
+                       View
+                    </a>
                 </div>
             {% endfor %}
         {% else %}
-            <p>No patients assigned.</p>
+            <p style="color:#555; margin:0;">No patients assigned.</p>
         {% endif %}
     </div>
 
-    <div style="text-align:center; margin-top:25px;">
-        <a href="/doctor/availability"
-           style="padding:8px 20px; background:#82e0aa; border-radius:6px; text-decoration:none;">
-            Provide Availability
-        </a>
+    <div style="text-align:center; margin-top:30px;">
+        <a href="{{ url_for('doctor_availability') }}"
+   style="padding:10px 25px; background:#82e0aa; border-radius:8px; 
+          text-decoration:none; font-size:16px; color:black;">
+    Provide Availability
+</a>
+
     </div>
 
 </div>

@@ -48,9 +48,12 @@ class Appointment(db.Model):
 class Treatment(db.Model):
     __tablename__ = 'treatments'
     id = db.Column(db.Integer, primary_key=True)
-    treatment_name = db.Column(db.String(100), nullable=False)
     appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=False)
-    description = db.Column(db.String(255), nullable=False)
+    visit_type = db.Column(db.String(100))
+    tests_done = db.Column(db.String(255))
+    diagnosis = db.Column(db.String(255))
+    prescription = db.Column(db.String(255))
+    medicines = db.Column(db.String(255))
     prescribed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Medicine(db.Model):
@@ -58,6 +61,16 @@ class Medicine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     intake_time = db.Column(db.String(50), nullable=False)
+
+class DoctorAvailability(db.Model):
+    __tablename__ = 'doctor_availability'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date = db.Column(db.String(20), nullable=False)
+    morning = db.Column(db.String(20), default="available")
+    evening = db.Column(db.String(20), default="available")
+
 
 @app.route('/')
 def root():
@@ -165,38 +178,98 @@ def patient_history():
         history=history
     )
 
+@app.route('/doctor/availability', methods=['GET'])
+def doctor_availability():
+    # Only logged-in doctor can access
+    if session.get("role") != "doctor":
+        return redirect(url_for('login'))
+
+    doctor_id = session["id"]
+
+    from datetime import datetime, timedelta
+    days = [(datetime.now() + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(7)]
+
+    availability = {}
+    for d in days:
+        rec = DoctorAvailability.query.filter_by(doctor_id=doctor_id, date=d).first()
+        availability[d] = rec
+
+    return render_template(
+        "doctor/doctor_availability.html",
+        days=days,
+        availability=availability
+    )
+
+
 @app.route('/doctor/<int:doctor_id>/availability')
-def doctor_availability(doctor_id):
+def doctor_availability_patient(doctor_id):
+
     doctor = User.query.get_or_404(doctor_id)
 
     from datetime import datetime, timedelta
-    days = []
-    for i in range(7):
-        d = datetime.now() + timedelta(days=i)
-        days.append(d.strftime("%d/%m/%Y"))
+    days = [(datetime.now() + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(7)]
+
+    availability = {}
+    for d in days:
+        rec = DoctorAvailability.query.filter_by(doctor_id=doctor_id, date=d).first()
+        availability[d] = rec
+
+    booked_morning = {}
+    booked_evening = {}
+
+    for d in days:
+        booked_morning[d] = Appointment.query.filter_by(
+            doctor_id=doctor_id, date=d, time="morning"
+        ).first() is not None
+
+        booked_evening[d] = Appointment.query.filter_by(
+            doctor_id=doctor_id, date=d, time="evening"
+        ).first() is not None
 
     return render_template(
         "patient/doctor_availability.html",
         doctor=doctor,
-        days=days
+        days=days,
+        availability=availability,
+        booked_morning=booked_morning,
+        booked_evening=booked_evening
     )
+
 
 
 
 @app.route('/book_appointment', methods=['POST'])
 def book_appointment():
     doctor_id = request.form.get("doctor_id")
-    date_str = request.form.get("date")   
+    date = request.form.get("date")
     time = request.form.get("time")
     patient_id = session.get("id")
 
-    date_obj = datetime.strptime(date_str, "%d/%m/%Y").strftime("%d/%m/%Y")
+    # Check slot availability
+    av = DoctorAvailability.query.filter_by(doctor_id=doctor_id, date=date).first()
+
+    if not av:
+        return "Doctor has not provided availability!", 400
+
+    if time == "morning" and av.morning != "available":
+        return "This morning slot is not available!", 400
+
+    if time == "evening" and av.evening != "available":
+        return "This evening slot is not available!", 400
+
+    # Check if already booked
+    exists = Appointment.query.filter_by(
+        doctor_id=doctor_id, date=date, time=time
+    ).first()
+
+    if exists:
+        return "Slot already booked!", 400
 
     new_appointment = Appointment(
-        date=date_obj,
-        time=time,
-        patient_id=patient_id,
         doctor_id=doctor_id,
+        patient_id=patient_id,
+        date=date,
+        time=time,
         status="Booked"
     )
 
@@ -204,6 +277,7 @@ def book_appointment():
     db.session.commit()
 
     return redirect(url_for('patient_dash'))
+
 
 
 @app.route('/doctor/<int:doctor_id>/details')
@@ -216,6 +290,61 @@ def doctor_details(doctor_id):
         doctor=doctor,
         department=department
     )
+
+
+@app.route("/doctor/toggle_slot", methods=["POST"])
+def toggle_slot():
+    doctor_id = session["id"]
+    date = request.form.get("date")
+    time = request.form.get("time")  # morning / evening
+
+    record = DoctorAvailability.query.filter_by(doctor_id=doctor_id, date=date).first()
+
+    if not record:
+        record = DoctorAvailability(doctor_id=doctor_id, date=date)
+        db.session.add(record)
+
+    if time == "morning":
+        record.morning = "not" if record.morning == "available" else "available"
+    else:
+        record.evening = "not" if record.evening == "available" else "available"
+
+    db.session.commit()
+    return "OK"
+
+
+@app.route('/doctor/cancel/<int:appointment_id>')
+def doctor_cancel(appointment_id):
+
+    appt = Appointment.query.get_or_404(appointment_id)
+
+    # only the doctor assigned to this appointment can cancel
+    if appt.doctor_id != session.get("id"):
+        return redirect(url_for('doctor_dash'))
+
+    db.session.delete(appt)
+    db.session.commit()
+
+    return redirect(url_for('doctor_dash'))
+
+
+@app.route('/doctor/toggle_complete/<int:appointment_id>')
+def toggle_complete(appointment_id):
+
+    appt = Appointment.query.get_or_404(appointment_id)
+
+    if appt.doctor_id != session.get("id"):
+        return redirect(url_for('doctor_dash'))
+
+    # Toggle logic
+    if appt.status == "Booked":
+        appt.status = "Completed"
+    else:
+        appt.status = "Booked"
+
+    db.session.commit()
+
+    return redirect(url_for('doctor_dash'))
 
 
 
@@ -244,6 +373,7 @@ def doctor_dash():
         .filter(Appointment.doctor_id == doctor_id)
         .with_entities(
             Appointment.id,
+            Appointment.status,
             User.user_name.label("patient_name")
         )
         .all()
@@ -270,7 +400,6 @@ def update_history(appointment_id):
     patient = User.query.get(appointment.patient_id)
     doctor = User.query.get(appointment.doctor_id)
     department = Department.query.get(doctor.department_id)
-
     medicines = Medicine.query.all()
 
     if request.method == 'POST':
@@ -279,21 +408,18 @@ def update_history(appointment_id):
         diagnosis = request.form.get("diagnosis")
         prescription = request.form.get("prescription")
 
-        selected_medicine_id = request.form.get("medicine_id")
-        selected_medicine = Medicine.query.get(selected_medicine_id)
+        med_id = request.form.get("medicine_id")
+        selected_medicine = Medicine.query.get(med_id)
 
-        description_text = f"""
-        Visit Type: {visit_type}
-        Tests Done: {tests_done}
-        Diagnosis: {diagnosis}
-        Prescription: {prescription}
-        Medicine: {selected_medicine.name} ({selected_medicine.intake_time})
-        """
+        med_string = f"{selected_medicine.name} ({selected_medicine.intake_time})" if selected_medicine else ""
 
         new_record = Treatment(
-            treatment_name="Visit Record",
             appointment_id=appointment.id,
-            description=description_text.strip()
+            visit_type=visit_type,
+            tests_done=tests_done,
+            diagnosis=diagnosis,
+            prescription=prescription,
+            medicines=selected_medicine.name + " (" + selected_medicine.intake_time + ")"
         )
 
         db.session.add(new_record)
@@ -311,6 +437,7 @@ def update_history(appointment_id):
         department=department,
         medicines=medicines
     )
+
 
 
  
@@ -384,6 +511,19 @@ def patient_history_admin(patient_id):
         department=department,
         history=history
     )
+
+@app.route('/cancel', methods=['POST'])
+def cancel():
+    appointment_id = request.json.get("appointment_id")
+    appointment = Appointment.query.get_or_404(appointment_id)
+
+    if appointment.patient_id != session.get("id"):
+        return {"success": False}, 403
+
+    db.session.delete(appointment)
+    db.session.commit()
+
+    return {"success": True}
 
 
 
