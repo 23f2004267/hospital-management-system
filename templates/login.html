@@ -18,34 +18,46 @@
     <form method="POST">
 
         <label style="font-size:15px;">Email</label><br>
+
         <input 
             type="email" 
             name="email"
             required
             style="
                 width:100%; 
-                padding:10px; 
-                margin-top:5px; 
-                margin-bottom:15px;
+                padding:10px 10px 10px 4px; 
+                margin-top:5px;
+                margin-bottom: 10px;
                 border:2px solid black;
                 border-radius:10px;
             "
         >
 
+
+
         <label style="font-size:15px;">Password</label><br>
         <input 
             type="password" 
             name="password"
+            id="loginPassword"
             required
             style="
                 width:100%; 
-                padding:10px; 
-                margin-top:5px; 
-                margin-bottom:20px;
+                padding:10px 10px 10px 4px; 
+                margin-top:4px; 
+                margin-bottom:5px;
                 border:2px solid black;
                 border-radius:10px;
             "
         >
+        <div style="margin-top:6px; margin-bottom:20px;">
+            <input 
+                type="checkbox"
+                onclick="toggleLoginPassword()"
+            >
+            Show Password
+        </div>
+        
 
         <button 
             type="submit"
@@ -54,7 +66,8 @@
                 padding:10px;
                 font-size:16px;
                 border:2px solid black;
-                background:white;
+                margin-left: 10px;
+                background:rgb(57, 152, 57);
                 border-radius:10px;
                 cursor:pointer;
             "
@@ -70,5 +83,18 @@
     </p>
 
 </div>
+
+<script>
+    function toggleLoginPassword() {
+        var passwordField = document.getElementById("loginPassword");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+        } else {
+            passwordField.type = "password";
+        }
+    }
+</script>
+
 
 {% endblock %}

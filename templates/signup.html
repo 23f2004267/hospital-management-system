@@ -24,9 +24,10 @@
             required
             style="
                 width:100%; 
-                padding:10px; 
+                padding:10px 10px 10px 4px;
                 margin-top:5px; 
                 margin-bottom:15px;
+                margin-right:100px;
                 border:2px solid black;
                 border-radius:10px;
             "
@@ -38,10 +39,9 @@
             name="email"
             required
             style="
-                width:100%; 
-                padding:10px; 
-                margin-top:5px; 
-                margin-bottom:15px;
+                width:100%;    
+                padding:10px 10px 10px 4px;
+                margin-bottom: 15px;
                 border:2px solid black;
                 border-radius:10px;
             "
@@ -51,16 +51,25 @@
         <input 
             type="password" 
             name="password"
+            id="signupPassword"
             required
             style="
                 width:100%; 
                 padding:10px; 
-                margin-top:5px; 
-                margin-bottom:20px;
+                padding:10px 10px 10px 4px;
+                margin-bottom:10px;
                 border:2px solid black;
                 border-radius:10px;
             "
         >
+        <div style="margin-bottom:25px;">
+            <input 
+                type="checkbox"
+                onclick="toggleSignupPassword()"
+            >
+            Show Password
+        </div>
+
 
         <button 
             type="submit"
@@ -69,7 +78,7 @@
                 padding:10px;
                 font-size:16px;
                 border:2px solid black;
-                background:white;
+                background:rgb(57, 152, 57);;
                 border-radius:10px;
                 cursor:pointer;
             "
@@ -85,5 +94,18 @@
     </p>
 
 </div>
+
+<script>
+    function toggleSignupPassword() {
+        var passwordField = document.getElementById("signupPassword");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+        } else {
+            passwordField.type = "password";
+        }
+    }
+</script>
+
 
 {% endblock %}
