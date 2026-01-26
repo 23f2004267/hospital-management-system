@@ -10,7 +10,7 @@
     width: 420px;
     margin: auto;
     margin-top: 20px;
-    padding: 25px;
+    padding: 45px;
     border: 2px solid black;
     border-radius: 25px;
     background: white;
@@ -20,12 +20,12 @@
     <form method="POST">
 
         <label>Fullname</label><br>
-        <input type="text" name="full_name" required style="width:100%; padding:12px; margin-bottom:15px;
+        <input type="text" name="full_name" required style="width:100%; padding:10px 10px 10px 4px;; margin-bottom:15px;margin-top:5px;
                       border:2px solid black; border-radius:10px;">
 
         <label>Department</label>
         <select name="department_id" required
-            style="width:100%; padding:10px; border:2px solid black; border-radius:10px; margin-bottom:15px;">
+            style="width:100%; padding:10px 10px 10px 4px;; border:2px solid black; border-radius:10px; margin-bottom:15px; margin-top:5px; ">
             <option value="" disabled selected>Select Department</option>
 
             {% for dept in departments %}
@@ -34,11 +34,11 @@
         </select>
 
         <label>Experience (years)</label><br>
-        <input type="number" name="experience" min="0" required style="width:100%; padding:12px; margin-bottom:20px;
+        <input type="number" name="experience" min="0" required style="width:100%; padding:10px 10px 10px 4px; margin-top:5px; margin-bottom:10px;
                       border:2px solid black; border-radius:10px;">
 
 
-        <button type="submit" style="float:right; padding:8px 20px; font-size:15px;
+        <button type="submit" style="float:right; padding:8px 20px ; margin-bottom: 10px;margin-right:155px ; font-size:15px;
                        border:2px solid green; color:green; background:white;
                        border-radius:8px; cursor:pointer;">
             create
